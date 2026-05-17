@@ -1067,3 +1067,11 @@ input.nav-link:disabled,input.nav-link[readonly]{background-color:transparent;op
 ::-webkit-scrollbar-corner{background:rgba(0,0,0,0);border-radius:0 0 8px 0}
 ::-webkit-scrollbar-button{background-color:rgba(0,0,0,0);height:2px;width:2px}
 }*/
+
+/* dark-mode 覆盖 io-grey-mode 的白色sidebar背景 */
+body.dark-mode .io-grey-mode .sidebar-logo,
+body.dark-mode.io-grey-mode .sidebar-logo { background: #1a2230 !important; }
+body.dark-mode .io-grey-mode .sidebar-nav-inner,
+body.dark-mode.io-grey-mode .sidebar-nav-inner { background: #1a2230 !important; }
+body.dark-mode .io-grey-mode .sidebar-nav,
+body.dark-mode.io-grey-mode .sidebar-nav { background: #1a2230 !important; }
