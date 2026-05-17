@@ -7,9 +7,6 @@ const LINKS_FILE = '../links.json';
 
 const DEFAULT_ICON = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTk5IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiPjwvY2lyY2xlPjxwYXRoIGQ9Ik0yIDEyaDIwIj48L3BhdGg+PHBhdGggZD0iTTEyIDJhMTUuMyAxNS4zIDAgMCAxIDQgMTAgMTUuMyAxNS4zIDAgMCAxLTQgMTAgMTUuMyAxNS4zIDAgMCAxLTQtMTAgMTUuMyAxNS4zIDAgMCAxIDQtMTB6Ij48L3BhdGg+PC9zdmc+';
 
-/* ══════════════════════════════════════
-   section 名处理：分离 emoji 和文字
-══════════════════════════════════════ */
 function sectionLabel(section) {
   return section.replace(/^[\p{Emoji_Presentation}\p{Extended_Pictographic}]+/u, '').trim();
 }
@@ -18,9 +15,6 @@ function sectionEmoji(section) {
   return m ? m[1] : '';
 }
 
-/* ══════════════════════════════════════
-   搜索引擎数据
-══════════════════════════════════════ */
 const SEARCH_CATEGORIES = [
   {
     id: 'engine', label: '引擎',
@@ -89,7 +83,6 @@ let currentCategoryId = 'engine';
 let currentEngine = SEARCH_CATEGORIES[0].engines[0];
 let enginePanelOpen = false;
 
-/* ── 工具函数 ── */
 function getDomain(url) {
   try { return new URL(url).hostname; } catch { return null; }
 }
@@ -100,9 +93,7 @@ function buildFaviconUrl(domain) {
 function faviconSrc(url) { return buildFaviconUrl(getDomain(url)); }
 function engineFavicon(e) { return buildFaviconUrl(e.domain); }
 
-/* ══════════════════════════════════════
-   分类 Tab
-══════════════════════════════════════ */
+/* 分类 Tab */
 function renderTabs() {
   const el = document.getElementById('ws-tabs');
   if (!el) return;
@@ -124,16 +115,10 @@ function renderTabs() {
 }
 
 function updateEngineDisplay() {
-  const icon = document.getElementById('ws-engine-icon');
-  const name = document.getElementById('ws-engine-name');
-  if (icon) { icon.src = engineFavicon(currentEngine); icon.style.display = ''; }
-  if (name) name.textContent = currentEngine.name;
+  // 无前端引擎显示区，此函数保留供模态框调用
 }
 
-/* ══════════════════════════════════════
-   快捷引擎标签（搜索框正下方一排，对标图1）
-   显示当前分类前 6 个引擎
-══════════════════════════════════════ */
+/* 快捷引擎 — 显示全部，不限制数量 */
 function renderQuickEngines() {
   const wrap = document.getElementById('quick-engines');
   if (!wrap) return;
@@ -141,14 +126,13 @@ function renderQuickEngines() {
   const cat = SEARCH_CATEGORIES.find(c => c.id === currentCategoryId);
   if (!cat) return;
 
-  cat.engines.slice(0, 6).forEach(engine => {
+  cat.engines.forEach(engine => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'quick-engine-btn' + (engine === currentEngine ? ' active' : '');
     btn.textContent = engine.name;
     btn.onclick = () => {
       currentEngine = engine;
-      updateEngineDisplay();
       renderQuickEngines();
       document.getElementById('search-text')?.focus();
     };
@@ -156,42 +140,30 @@ function renderQuickEngines() {
   });
 }
 
-/* ══════════════════════════════════════
-   引擎面板（展开模式）
-══════════════════════════════════════ */
+/* 引擎面板 */
 function renderEngineList() {
   const panel = document.getElementById('search-list');
   if (!panel) return;
   panel.innerHTML = '';
   const cat = SEARCH_CATEGORIES.find(c => c.id === currentCategoryId);
   if (!cat) return;
-
   const ul = document.createElement('ul');
   ul.className = 'search-type';
   cat.engines.forEach((engine, idx) => {
     const li = document.createElement('li');
     const id = `ws-engine-${idx}`;
     const input = document.createElement('input');
-    input.type = 'radio';
-    input.name = 'ws-type';
-    input.id = id;
-    input.hidden = true;
+    input.type = 'radio'; input.name = 'ws-type'; input.id = id; input.hidden = true;
     if (engine === currentEngine) input.checked = true;
-
     const label = document.createElement('label');
     label.htmlFor = id;
     label.innerHTML = `<span>${engine.name}</span>`;
     label.onclick = () => {
       currentEngine = engine;
-      updateEngineDisplay();
-      renderEngineList();
-      renderQuickEngines();
+      updateEngineDisplay(); renderEngineList(); renderQuickEngines();
       document.getElementById('search-text')?.focus();
     };
-
-    li.appendChild(input);
-    li.appendChild(label);
-    ul.appendChild(li);
+    li.appendChild(input); li.appendChild(label); ul.appendChild(li);
   });
   panel.appendChild(ul);
 }
@@ -206,9 +178,7 @@ function toggleEnginePanel() {
 }
 window.toggleEnginePanel = toggleEnginePanel;
 
-/* ══════════════════════════════════════
-   搜索执行
-══════════════════════════════════════ */
+/* 搜索执行 */
 function doSearch(e) {
   if (e) e.preventDefault();
   const kw = document.getElementById('search-text')?.value.trim();
@@ -216,16 +186,10 @@ function doSearch(e) {
 }
 window.doSearch = doSearch;
 
-function onSearchInput() {
-  const query = document.getElementById('search-text')?.value.toLowerCase().trim() ?? '';
-  filterCards(query);
-}
-window.onSearchInput = onSearchInput;
-
 function onSearchKeydown(e) {
   if (e.key === 'Escape') {
     const input = document.getElementById('search-text');
-    if (input) { input.value = ''; filterCards(''); }
+    if (input) { input.value = ''; }
     if (enginePanelOpen) toggleEnginePanel();
   }
 }
@@ -247,16 +211,11 @@ function filterCards(query) {
 }
 window.filterCards = filterCards;
 
-/* ══════════════════════════════════════
-   ID 生成
-══════════════════════════════════════ */
 function sectionId(s) {
   return 'sec-' + s.replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
 }
 
-/* ══════════════════════════════════════
-   渲染侧边栏（使用图标映射）
-══════════════════════════════════════ */
+/* 渲染侧边栏 */
 function renderSidebar(sections) {
   const menu = document.getElementById('main-menu');
   if (!menu) return;
@@ -265,7 +224,6 @@ function renderSidebar(sections) {
     const id = sectionId(section);
     const emoji = sectionEmoji(section);
     const label = sectionLabel(section);
-
     const li = document.createElement('li');
     li.className = 'sidebar-item';
     const a = document.createElement('a');
@@ -279,10 +237,13 @@ function renderSidebar(sections) {
   document.querySelectorAll('a.nav-smooth').forEach(link => {
     link.addEventListener('click', function(e) {
       e.preventDefault();
-      const target = document.getElementById(this.getAttribute('href').substring(1));
+      const targetId = this.getAttribute('href').substring(1);
+      const target = document.getElementById(targetId);
       if (target) {
-        const bannerH = document.querySelector('.header-big')?.offsetHeight || 200;
-        const top = target.getBoundingClientRect().top + window.scrollY - bannerH - 10;
+        /* 修正定位：减去顶部栏54px高度，再留8px间距 */
+        const topBarH = 54;
+        const margin  = 8;
+        const top = target.getBoundingClientRect().top + window.scrollY - topBarH - margin;
         window.scrollTo({ top, behavior: 'smooth' });
       }
       document.querySelectorAll('#main-menu li').forEach(l => l.classList.remove('active'));
@@ -291,9 +252,7 @@ function renderSidebar(sections) {
   });
 }
 
-/* ══════════════════════════════════════
-   渲染内容区
-══════════════════════════════════════ */
+/* 渲染内容区 */
 function renderContent(sections) {
   const main = document.getElementById('content');
   if (!main) return;
@@ -307,7 +266,6 @@ function renderContent(sections) {
     const block = document.createElement('div');
     block.className = 'ws-section';
 
-    // 标题：emoji + 文字，不再插入 FontAwesome 图标
     const heading = document.createElement('div');
     heading.className = 'd-flex flex-fill';
     heading.innerHTML = `
@@ -316,7 +274,6 @@ function renderContent(sections) {
       </h4>`;
     block.appendChild(heading);
 
-    // 卡片行
     const row = document.createElement('div');
     row.className = 'row';
 
@@ -361,18 +318,14 @@ function renderContent(sections) {
   }
 }
 
-/* ══════════════════════════════════════
-   切换回主题一
-══════════════════════════════════════ */
+/* 切换主题 */
 function switchToMain() {
   localStorage.setItem('navTheme', 'main');
   window.location.href = '../index.html';
 }
 window.switchToMain = switchToMain;
 
-/* ══════════════════════════════════════
-   入口
-══════════════════════════════════════ */
+/* 入口 */
 document.addEventListener('DOMContentLoaded', async () => {
   renderTabs();
   updateEngineDisplay();
