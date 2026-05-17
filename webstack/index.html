@@ -33,16 +33,20 @@
       transition: width 0.25s ease;
       display: flex; flex-direction: column;
     }
-    .sidebar-nav-inner {
+    /* 用最高优先级覆盖 io-grey-mode 的白色背景 */
+    body.io-grey-mode #sidebar .sidebar-nav-inner,
+    body #sidebar .sidebar-nav-inner {
       max-width: none !important;
       width: 100%; height: 100%;
       display: flex; flex-direction: column;
-      background: #fff;
+      background: #fff !important;
       border-right: 1px solid rgba(0,0,0,0.07);
     }
-    body.dark-mode .sidebar-nav-inner {
+    /* 暗色模式优先级最高 */
+    body.dark-mode #sidebar .sidebar-nav-inner,
+    body.dark-mode.io-grey-mode #sidebar .sidebar-nav-inner {
       background: #1a2230 !important;
-      border-color: #2a3448;
+      border-color: #2a3448 !important;
     }
 
     /* Logo区 */
@@ -53,18 +57,13 @@
       border-bottom: 1px solid rgba(0,0,0,0.07);
       flex-shrink: 0; overflow: hidden;
     }
-    body.dark-mode .sidebar-logo { border-color: #2a3448; }
-    /* CSS层面也写上，JS行内样式会覆盖 */
-    .sidebar-logo img {
-      border-radius: 10px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
+    body.dark-mode .sidebar-logo { border-color: #2a3448 !important; }
+    .sidebar-logo img { border-radius: 10px; object-fit: contain; flex-shrink: 0; }
     #sidebar-logo-text {
       font-size: 1.18rem; font-weight: 900;
       letter-spacing: 0.04em; white-space: nowrap; color: #222;
     }
-    body.dark-mode #sidebar-logo-text { color: #e0e6f0; }
+    body.dark-mode #sidebar-logo-text { color: #e0e6f0 !important; }
     #sidebar.mini-sidebar .sidebar-logo { justify-content: center; padding: 0; }
     #sidebar.mini-sidebar #sidebar-logo-text { display: none; }
 
@@ -90,9 +89,7 @@
     #main-menu li a:hover { background: rgba(22,119,255,0.08) !important; color: #1677ff !important; }
     #main-menu li.active > a { background: rgba(22,119,255,0.12) !important; color: #1677ff !important; }
     #main-menu li a .menu-label { font-size: 0.95rem; font-weight: 600; }
-    #sidebar.mini-sidebar #main-menu li a {
-      justify-content: center; padding: 0 !important; margin: 2px 6px;
-    }
+    #sidebar.mini-sidebar #main-menu li a { justify-content: center; padding: 0 !important; margin: 2px 6px; }
     #sidebar.mini-sidebar #main-menu li a .menu-label { display: none; }
     #sidebar.mini-sidebar #main-menu li a .sidebar-emoji { display: inline-flex !important; }
 
@@ -162,14 +159,15 @@
     #top-quote {
       flex: 1; text-align: right;
       font-size: 0.82rem; font-style: italic;
-      color: #444; cursor: pointer;
+      color: #444;
+      /* 去掉pointer，不可点击 */
+      cursor: default;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
       padding: 0 0 0 16px;
-      transition: color 0.2s, opacity 0.4s;
+      transition: opacity 0.4s;
+      user-select: none;
     }
-    #top-quote:hover { color: #111; }
     body.dark-mode #top-quote { color: #bbc; }
-    body.dark-mode #top-quote:hover { color: #fff; }
     #top-quote.fade-out { opacity: 0; }
     #top-quote.fade-in  { opacity: 1; }
     #top-bar-spacer { height: 54px; flex-shrink: 0; }
@@ -201,9 +199,10 @@
     /* ══ 搜索区 ══ */
     .s-search {
       position: relative; z-index: 2;
-      width: 100%; max-width: 780px;
-      margin: 0 auto; padding: 28px 20px;
+      width: 100%; max-width: 900px;
+      margin: 0 auto; padding: 24px 20px 20px;
     }
+
     /* 分类Tab */
     .header-big .s-type-list.big, .s-type-list.big {
       display: flex !important; flex-direction: row !important;
@@ -212,11 +211,11 @@
       background: none !important; box-shadow: none !important;
       padding: 0 !important; white-space: normal !important;
       overflow: visible !important; gap: 4px;
-      justify-content: center; margin-bottom: 22px;
+      justify-content: center; margin-bottom: 16px;
     }
     .header-big .s-type-list.big label, .s-type-list.big label {
       display: inline-block !important;
-      padding: 6px 22px !important;
+      padding: 5px 22px !important;
       border-radius: 0 !important;
       background: none !important; border: none !important;
       border-bottom: 2px solid transparent !important;
@@ -233,7 +232,7 @@
       left: auto !important; width: auto !important; z-index: auto !important;
     }
 
-    /* 搜索框 */
+    /* 搜索框 — 覆盖所有Bootstrap和form-control样式 */
     .super-search-fm {
       display: flex; align-items: center;
       background: rgba(255,255,255,0.15);
@@ -249,17 +248,33 @@
       box-shadow: 0 6px 32px rgba(0,0,0,0.3);
       border-color: rgba(255,255,255,0.5);
     }
-    .super-search-fm .search-key {
-      flex: 1; background: transparent !important; border: none !important;
-      box-shadow: none !important; color: #fff !important;
-      font-size: 1.12rem; padding: 17px 4px; height: auto;
+    /* 强制覆盖form-control所有相关样式 */
+    .super-search-fm input,
+    .super-search-fm input.form-control,
+    .super-search-fm .search-key,
+    #search-text {
+      flex: 1 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: #fff !important;
+      font-size: 1.15rem !important;
+      padding: 18px 4px !important;
+      height: auto !important;
+      line-height: 1.4 !important;
+      border-radius: 0 !important;
     }
-    .super-search-fm .search-key::placeholder { color: rgba(255,255,255,0.55); }
+    .super-search-fm input::placeholder,
+    .super-search-fm .search-key::placeholder,
+    #search-text::placeholder {
+      color: rgba(255,255,255,0.5) !important;
+      font-size: 1.15rem !important;
+    }
     .super-search-fm .submit {
       background: none !important; border: none !important;
       outline: none !important; box-shadow: none !important;
       color: rgba(255,255,255,0.85);
-      font-size: 1.25rem; cursor: pointer; padding: 0;
+      font-size: 1.3rem; cursor: pointer; padding: 0;
       width: 40px; height: 40px;
       display: flex; align-items: center; justify-content: center;
       transition: color 0.2s; flex-shrink: 0;
@@ -270,14 +285,14 @@
     /* 快捷引擎 */
     .quick-engines {
       display: flex; gap: 0; justify-content: center;
-      flex-wrap: nowrap; margin-top: 20px;
+      flex-wrap: nowrap; margin-top: 14px;
       overflow-x: auto;
     }
     .quick-engine-btn {
       background: none !important; border: none !important;
       outline: none !important; box-shadow: none !important;
       border-radius: 0 !important;
-      padding: 6px 18px 4px; cursor: pointer;
+      padding: 5px 16px 3px; cursor: pointer;
       color: rgba(255,255,255,0.6);
       font-size: 0.92rem; font-weight: 600;
       transition: color 0.15s; white-space: nowrap;
@@ -360,7 +375,7 @@
     #go-top { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
     #go-top.visible { opacity: 1; pointer-events: auto; }
 
-    /* ══ 搜索模态框 — 更大更居中，去掉上下箭头 ══ */
+    /* ══ 搜索模态框 ══ */
     #search-modal {
       display: none; position: fixed; inset: 0; z-index: 10000;
       background: rgba(0,0,0,0.5);
@@ -377,13 +392,12 @@
     }
     body.dark-mode #search-modal-box { background: #1e2736; }
     @keyframes modal-in {
-      from { opacity:0; transform: translateY(-16px) scale(0.97); }
-      to   { opacity:1; transform: translateY(0) scale(1); }
+      from { opacity:0; transform: scale(0.97); }
+      to   { opacity:1; transform: scale(1); }
     }
     #search-modal-cats {
       display: flex; gap: 0; border-bottom: 1px solid #eee;
       margin-bottom: 18px; overflow-x: auto;
-      /* 隐藏滚动条上下箭头 */
       scrollbar-width: none;
     }
     #search-modal-cats::-webkit-scrollbar { display: none; }
@@ -392,8 +406,7 @@
       background: none; border: none; border-bottom: 2px solid transparent;
       padding: 8px 20px; font-size: 0.92rem; font-weight: 600;
       color: #888; cursor: pointer; white-space: nowrap;
-      transition: all 0.15s; margin-bottom: -1px;
-      outline: none !important;
+      transition: all 0.15s; margin-bottom: -1px; outline: none !important;
     }
     .modal-cat-btn:hover { color: #1677ff; }
     .modal-cat-btn.active { color: #1677ff; border-bottom-color: #1677ff; }
@@ -403,8 +416,8 @@
     .modal-engine-btn {
       padding: 5px 16px; border-radius: 14px; border: 1px solid #e0e0e0;
       background: #f5f5f5; color: #555;
-      font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
-      outline: none !important;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      transition: all 0.15s; outline: none !important;
     }
     .modal-engine-btn:hover, .modal-engine-btn.active { background: #1677ff; color: #fff; border-color: #1677ff; }
     body.dark-mode .modal-engine-btn { background: #263045; border-color: #2a3448; color: #aaa; }
@@ -431,11 +444,10 @@
     }
     #search-modal-submit:hover { background: #0958d9; }
     #search-modal-close {
-      position: absolute; top: -48px; left: 50%; transform: translateX(-50%);
+      position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
       background: none; border: none; color: rgba(255,255,255,0.85);
       font-size: 2rem; cursor: pointer;
-      transition: color 0.2s; z-index: 10001;
-      outline: none !important;
+      transition: color 0.2s; z-index: 10001; outline: none !important;
     }
     #search-modal-close:hover { color: #fff; }
   </style>
@@ -475,7 +487,8 @@
   <button id="top-bar-toggle" onclick="toggleSidebar()" title="切换侧边栏">
     <i class="fas fa-bars"></i>
   </button>
-  <span id="top-quote" title="点击换一条"></span>
+  <!-- 格言不绑定点击事件，只读 -->
+  <span id="top-quote"></span>
 </div>
 
 <div class="page-container">
@@ -540,30 +553,19 @@
 <script src="assets/js/lazyload.min-12.4.0.js"></script>
 <script src="main.js"></script>
 <script>
-/* ── 用行内style强制设置Logo图标大小（优先级最高，无法被CSS覆盖） ── */
+/* Logo图标行内样式强制大小 */
 (function() {
   function fixLogoImg() {
     const img = document.getElementById('sidebar-logo-img');
     if (!img) return;
-    img.style.cssText = [
-      'width:52px',
-      'height:52px',
-      'min-width:52px',
-      'min-height:52px',
-      'max-width:52px',
-      'max-height:52px',
-      'border-radius:10px',
-      'object-fit:contain',
-      'flex-shrink:0',
-      'display:block'
-    ].join('!important;') + '!important';
+    img.style.cssText = 'width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;max-width:52px!important;max-height:52px!important;border-radius:10px!important;object-fit:contain!important;flex-shrink:0!important;display:block!important;';
   }
   fixLogoImg();
   document.addEventListener('DOMContentLoaded', fixLogoImg);
   window.addEventListener('load', fixLogoImg);
 })();
 
-/* ── 侧边栏 ── */
+/* 侧边栏 */
 (function() {
   const EXPANDED_W = '180px', MINI_W = '60px';
   const sidebar = document.getElementById('sidebar');
@@ -616,7 +618,7 @@
   popup.addEventListener('mouseleave', () => popup.classList.remove('show'));
 })();
 
-/* ── 暗色模式 ── */
+/* 暗色模式 */
 function toggleDark() {
   const isDark = document.body.classList.toggle('dark-mode');
   localStorage.setItem('darkMode', isDark ? '1' : '0');
@@ -631,7 +633,7 @@ window.toggleDark = toggleDark;
   }
 })();
 
-/* ── Banner背景 ── */
+/* Banner背景 */
 (function() {
   const layer = document.getElementById('banner-bg-layer');
   if (!layer) return;
@@ -639,7 +641,7 @@ window.toggleDark = toggleDark;
   requestAnimationFrame(() => layer.classList.add('loaded'));
 })();
 
-/* ── 格言（只有点击才切换，去掉定时器和汉堡触发） ── */
+/* 格言 — 只在加载时显示一条，不自动切换，不响应点击 */
 (function() {
   let quotes = [], currentIdx = -1;
   async function loadQuotes() {
@@ -664,12 +666,11 @@ window.toggleDark = toggleDark;
       el.classList.add('fade-in');
     }, 350);
   }
-  /* 只有点击格言本身才切换 */
-  document.getElementById('top-quote')?.addEventListener('click', () => showQuote());
+  /* 不绑定任何点击事件，不设定时器 */
   loadQuotes();
 })();
 
-/* ── 顶部栏透明 ── */
+/* 顶部栏透明 */
 (function() {
   const bar = document.getElementById('top-bar');
   function checkScroll() { bar.classList.toggle('at-top', window.scrollY < 10); }
@@ -677,14 +678,14 @@ window.toggleDark = toggleDark;
   checkScroll();
 })();
 
-/* ── 回顶部 ── */
+/* 回顶部 */
 function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 window.scrollToTop = scrollToTop;
 window.addEventListener('scroll', function() {
   document.getElementById('go-top')?.classList.toggle('visible', window.scrollY > 300);
 });
 
-/* ── 搜索键盘 ── */
+/* 搜索键盘 */
 function onSearchKeydown(e) {
   if (e.key === 'Escape') {
     const input = document.getElementById('search-text');
@@ -693,7 +694,7 @@ function onSearchKeydown(e) {
 }
 window.onSearchKeydown = onSearchKeydown;
 
-/* ── 搜索模态框 ── */
+/* 搜索模态框 */
 function openSearchModal() {
   const modal = document.getElementById('search-modal');
   if (!modal) return;
