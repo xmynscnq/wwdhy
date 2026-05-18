@@ -30,10 +30,9 @@
       top: 0 !important; left: 0;
       height: 100vh !important;
       z-index: 1090;
-      transition: width 0.25s ease;
+      transition: width 0.25s ease, transform 0.25s ease;
       display: flex; flex-direction: column;
     }
-    /* 用最高优先级覆盖 io-grey-mode 的白色背景 */
     body.io-grey-mode #sidebar .sidebar-nav-inner,
     body #sidebar .sidebar-nav-inner {
       max-width: none !important;
@@ -42,7 +41,6 @@
       background: #fff !important;
       border-right: 1px solid rgba(0,0,0,0.07);
     }
-    /* 暗色模式优先级最高 */
     body.dark-mode #sidebar .sidebar-nav-inner,
     body.dark-mode.io-grey-mode #sidebar .sidebar-nav-inner {
       background: #1a2230 !important;
@@ -62,6 +60,7 @@
     #sidebar-logo-text {
       font-size: 1.18rem; font-weight: 900;
       letter-spacing: 0.04em; white-space: nowrap; color: #222;
+      cursor: pointer;
     }
     body.dark-mode #sidebar-logo-text { color: #e0e6f0 !important; }
     #sidebar.mini-sidebar .sidebar-logo { justify-content: center; padding: 0; }
@@ -123,8 +122,60 @@
     .sidebar-bottom li a:hover { background: rgba(22,119,255,0.08) !important; color: #1677ff !important; }
     #sidebar.mini-sidebar .sidebar-bottom li a { justify-content: center; padding: 0 !important; margin: 2px 6px; }
     #sidebar.mini-sidebar .sidebar-bottom li a .menu-label { display: none; }
+    body.dark-mode #main-menu li a { color: #b0bec5 !important; }
+    body.dark-mode #main-menu li a:hover { color: #4da6ff !important; }
+    body.dark-mode #main-menu li.active > a { color: #4da6ff !important; }
+    body.dark-mode .sidebar-bottom li a { color: #b0bec5 !important; }
+    body.dark-mode .sidebar-bottom li a:hover { color: #4da6ff !important; }
+    #net-toggle-sidebar.intranet-active .sidebar-emoji::after { content: ''; }
 
-    /* ══ 顶部栏 ══ */
+    /* ══ 移动端遮罩 ══ */
+    #mobile-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1089;
+    }
+    #mobile-overlay.show { display: block; }
+
+    /* ══ 移动端顶部栏 ══ */
+    #mobile-top-bar {
+      display: none;
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 50px; z-index: 1088;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      align-items: center;
+      padding: 0 12px;
+      gap: 10px;
+    }
+    body.dark-mode #mobile-top-bar {
+      background: rgba(18,24,31,0.92);
+      border-color: rgba(255,255,255,0.06);
+    }
+    #mobile-logo-img {
+      width: 28px; height: 28px;
+      border-radius: 6px; object-fit: contain; flex-shrink: 0;
+    }
+    #mobile-logo-text {
+      flex: 1;
+      font-size: 1rem; font-weight: 900;
+      color: #222; letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+    body.dark-mode #mobile-logo-text { color: #e0e6f0; }
+    #mobile-hamburger {
+      width: 40px; height: 40px;
+      background: none; border: none;
+      color: #333; font-size: 1.2rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+    }
+    body.dark-mode #mobile-hamburger { color: #ccd6e0; }
+
+    /* ══ 顶部栏（桌面端） ══ */
     #top-bar {
       position: fixed; top: 0; right: 0;
       height: 54px; z-index: 1089;
@@ -144,7 +195,6 @@
       border-bottom-color: transparent !important;
       box-shadow: none !important;
     }
-    /* banner区域顶部栏：深色背景下用白色 */
     #top-bar.at-top #top-bar-toggle { color: rgba(255,255,255,0.85) !important; }
     #top-bar.at-top #top-bar-toggle:hover { color: #fff !important; }
     #top-bar.at-top #top-quote { color: rgba(255,255,255,0.75) !important; }
@@ -158,21 +208,10 @@
     #top-bar-toggle:hover { color: #1677ff; }
     body.dark-mode #top-bar-toggle { color: #ccd6e0; }
     body.dark-mode #top-bar-toggle:hover { color: #fff; }
-
-    /* 暗色模式下菜单文字颜色 */
-    body.dark-mode #main-menu li a { color: #b0bec5 !important; }
-    body.dark-mode #main-menu li a:hover { color: #4da6ff !important; }
-    body.dark-mode #main-menu li.active > a { color: #4da6ff !important; }
-    body.dark-mode .sidebar-bottom li a { color: #b0bec5 !important; }
-    body.dark-mode .sidebar-bottom li a:hover { color: #4da6ff !important; }
-
-    /* 格言 */
     #top-quote {
       flex: 1; text-align: right;
       font-size: 0.82rem; font-style: italic;
-      color: #222;
-      /* 去掉pointer，不可点击 */
-      cursor: default;
+      color: #222; cursor: default;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
       padding: 0 0 0 16px;
       transition: opacity 0.4s;
@@ -217,23 +256,27 @@
     /* 分类Tab */
     .header-big .s-type-list.big, .s-type-list.big {
       display: flex !important; flex-direction: row !important;
-      flex-wrap: wrap !important; position: static !important;
+      flex-wrap: nowrap !important; position: static !important;
       top: auto !important; width: auto !important;
       background: none !important; box-shadow: none !important;
-      padding: 0 !important; white-space: normal !important;
-      overflow: visible !important; gap: 4px;
+      padding: 0 !important; white-space: nowrap !important;
+      overflow-x: auto !important; overflow-y: hidden !important;
+      scrollbar-width: none !important;
+      gap: 0;
       justify-content: center; margin-bottom: 16px;
     }
+    .s-type-list.big::-webkit-scrollbar { display: none; }
     .header-big .s-type-list.big label, .s-type-list.big label {
       display: inline-block !important;
-      padding: 5px 22px !important;
+      padding: 5px 14px !important;
       border-radius: 0 !important;
       background: none !important; border: none !important;
       border-bottom: 2px solid transparent !important;
-      cursor: pointer; font-size: 1.05rem; font-weight: 600;
+      cursor: pointer; font-size: 0.88rem; font-weight: 600;
       color: rgba(255,255,255,0.55) !important;
       opacity: 1 !important; transition: all 0.18s;
       user-select: none; margin: 0; white-space: nowrap;
+      flex-shrink: 0;
     }
     .header-big .s-type-list.big label span { display: none !important; }
     .s-type-list.big label:hover { color: #fff !important; }
@@ -243,7 +286,7 @@
       left: auto !important; width: auto !important; z-index: auto !important;
     }
 
-    /* 搜索框 — 覆盖所有Bootstrap和form-control样式 */
+    /* 搜索框 */
     .super-search-fm {
       display: flex; align-items: center;
       background: rgba(255,255,255,0.15);
@@ -259,7 +302,6 @@
       box-shadow: 0 6px 32px rgba(0,0,0,0.3);
       border-color: rgba(255,255,255,0.5);
     }
-    /* 强制覆盖form-control所有相关样式 */
     .super-search-fm input,
     .super-search-fm input.form-control,
     .super-search-fm .search-key,
@@ -291,21 +333,21 @@
       transition: color 0.2s; flex-shrink: 0;
     }
     .super-search-fm .submit:hover { color: #fff; }
-    .super-search-fm .submit:focus { outline: none !important; box-shadow: none !important; }
 
     /* 快捷引擎 */
     .quick-engines {
       display: flex; gap: 0; justify-content: center;
       flex-wrap: nowrap; margin-top: 14px;
-      overflow-x: auto;
+      overflow-x: auto; scrollbar-width: none;
     }
+    .quick-engines::-webkit-scrollbar { display: none; }
     .quick-engine-btn {
       background: none !important; border: none !important;
       outline: none !important; box-shadow: none !important;
       border-radius: 0 !important;
-      padding: 5px 22px 3px; cursor: pointer;
+      padding: 5px 16px 3px; cursor: pointer;
       color: rgba(255,255,255,0.6);
-      font-size: 1.05rem; font-weight: 600;
+      font-size: 0.95rem; font-weight: 600;
       transition: color 0.15s; white-space: nowrap;
       display: flex; flex-direction: column; align-items: center; gap: 3px;
     }
@@ -316,7 +358,6 @@
     .quick-engine-btn.active::before { color: rgba(255,255,255,0.9); }
     .quick-engine-btn:hover { color: rgba(255,255,255,0.9) !important; }
     .quick-engine-btn.active { color: #fff !important; }
-    .quick-engine-btn:focus { outline: none !important; box-shadow: none !important; }
 
     /* ══ 内容区网格 ══ */
     #content.content-site {
@@ -398,8 +439,7 @@
       background: #fff; border-radius: 20px;
       padding: 28px 32px 32px; width: 90%; max-width: 720px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.25);
-      animation: modal-in 0.2s ease;
-      position: relative;
+      animation: modal-in 0.2s ease; position: relative;
     }
     body.dark-mode #search-modal-box { background: #1e2736; }
     @keyframes modal-in {
@@ -408,8 +448,7 @@
     }
     #search-modal-cats {
       display: flex; gap: 0; border-bottom: 1px solid #eee;
-      margin-bottom: 18px; overflow-x: auto;
-      scrollbar-width: none;
+      margin-bottom: 18px; overflow-x: auto; scrollbar-width: none;
     }
     #search-modal-cats::-webkit-scrollbar { display: none; }
     body.dark-mode #search-modal-cats { border-color: #2a3448; }
@@ -461,16 +500,80 @@
       transition: color 0.2s; z-index: 10001; outline: none !important;
     }
     #search-modal-close:hover { color: #fff; }
+
+    /* ══ 移动端适配 ══ */
+    @media (max-width: 768px) {
+      /* 隐藏桌面端顶部栏和侧边栏默认展开状态 */
+      #top-bar { display: none !important; }
+      #mobile-top-bar { display: flex !important; }
+
+      /* 侧边栏滑出式 */
+      #sidebar {
+        transform: translateX(-100%);
+        width: 240px !important;
+        transition: transform 0.25s ease !important;
+      }
+      #sidebar.mobile-open { transform: translateX(0) !important; }
+
+      /* 内容区顶部留出移动端顶部栏高度 */
+      #content-wrap { margin-left: 0 !important; }
+      #top-bar-spacer { height: 50px; }
+
+      /* 格言隐藏 */
+      #top-quote { display: none !important; }
+
+      /* Banner搜索区缩小内边距 */
+      .s-search { padding: 16px 12px 14px; }
+      .header-big { min-height: 200px; }
+
+      /* 分类Tab字体更小，强制一排 */
+      .s-type-list.big label,
+      .header-big .s-type-list.big label {
+        font-size: 0.75rem !important;
+        padding: 4px 10px !important;
+      }
+
+      /* 快捷引擎字体缩小 */
+      .quick-engine-btn { font-size: 0.8rem !important; padding: 4px 10px 2px !important; }
+
+      /* 搜索框字体缩小 */
+      .super-search-fm input,
+      #search-text {
+        font-size: 0.95rem !important;
+        padding: 10px 4px !important;
+      }
+      .super-search-fm { padding: 0 10px 0 16px; }
+
+      /* 卡片两列 */
+      .url-card { flex: 0 0 50% !important; max-width: 50% !important; }
+
+      /* 浮动按钮位置调整 */
+      #dark-toggle { bottom: 16px; right: 16px; width: 40px; height: 40px; font-size: 1rem; }
+      #float-tools { bottom: 66px; right: 16px; }
+      .float-btn { width: 40px; height: 40px; font-size: 1rem; }
+    }
   </style>
 </head>
 
 <body class="io-grey-mode">
 
-<div id="sidebar" class="sidebar-nav" style="width:180px;">
+<!-- 移动端顶部栏 -->
+<div id="mobile-top-bar">
+  <img id="mobile-logo-img" src="assets/images/logo.png" alt="logo" onerror="this.style.display='none'">
+  <span id="mobile-logo-text">王五导航</span>
+  <button id="mobile-hamburger" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+  </button>
+</div>
+
+<!-- 移动端遮罩 -->
+<div id="mobile-overlay"></div>
+
+<div id="sidebar" class="sidebar-nav">
   <div class="sidebar-nav-inner">
     <div class="sidebar-logo">
       <img id="sidebar-logo-img" src="assets/images/logo.png" alt="logo" onerror="this.style.display='none'">
-      <span id="sidebar-logo-text">王五导航</span>
+      <span id="sidebar-logo-text" title="点击切换模式">王五导航</span>
     </div>
     <div class="sidebar-menu flex-fill">
       <div class="sidebar-scroll">
@@ -483,8 +586,8 @@
       <ul>
         <li>
           <a id="net-toggle-sidebar" style="cursor:pointer;">
-          <span class="sidebar-emoji">🌐</span>
-          <span class="menu-label">切换内网</span>
+            <span class="sidebar-emoji">🌐</span>
+            <span class="menu-label">外网模式</span>
           </a>
         </li>
       </ul>
@@ -498,7 +601,6 @@
   <button id="top-bar-toggle" onclick="toggleSidebar()" title="切换侧边栏">
     <i class="fas fa-bars"></i>
   </button>
-  <!-- 格言不绑定点击事件，只读 -->
   <span id="top-quote"></span>
 </div>
 
@@ -564,7 +666,7 @@
 <script src="assets/js/lazyload.min-12.4.0.js"></script>
 <script src="main.js"></script>
 <script>
-/* Logo图标行内样式强制大小 */
+/* Logo图标大小 */
 (function() {
   function fixLogoImg() {
     const img = document.getElementById('sidebar-logo-img');
@@ -576,36 +678,63 @@
   window.addEventListener('load', fixLogoImg);
 })();
 
-/* 侧边栏 */
+/* 桌面端侧边栏（移动端由 main.js 的 toggleSidebar 接管） */
 (function() {
+  const MOBILE_BP  = 768;
   const EXPANDED_W = '180px', MINI_W = '60px';
   const sidebar = document.getElementById('sidebar');
   const wrap    = document.getElementById('content-wrap');
   const topBar  = document.getElementById('top-bar');
-  let isExpanded = localStorage.getItem('sidebarExpanded') !== '0';
 
-  function applyState(animate) {
+  function isMobile() { return window.innerWidth < MOBILE_BP; }
+
+  function applyDesktopState(animate) {
+    if (isMobile()) return;
+    const expanded = localStorage.getItem('sidebarExpanded') !== '0';
     if (!animate) sidebar.style.transition = 'none';
-    if (isExpanded) {
-      sidebar.classList.remove('mini-sidebar');
-      sidebar.style.width = EXPANDED_W;
-      wrap.style.marginLeft = EXPANDED_W;
-      topBar.style.left = EXPANDED_W;
-    } else {
-      sidebar.classList.add('mini-sidebar');
-      sidebar.style.width = MINI_W;
-      wrap.style.marginLeft = MINI_W;
-      topBar.style.left = MINI_W;
-    }
+    sidebar.classList.toggle('mini-sidebar', !expanded);
+    sidebar.style.width   = expanded ? EXPANDED_W : MINI_W;
+    wrap.style.marginLeft = expanded ? EXPANDED_W : MINI_W;
+    topBar.style.left     = expanded ? EXPANDED_W : MINI_W;
     if (!animate) requestAnimationFrame(() => sidebar.style.transition = '');
   }
-  window.toggleSidebar = function() {
-    isExpanded = !isExpanded;
-    localStorage.setItem('sidebarExpanded', isExpanded ? '1' : '0');
-    applyState(true);
-  };
-  applyState(false);
 
+  // 初始化
+  applyDesktopState(false);
+
+  // 响应窗口变化
+  window.addEventListener('resize', () => {
+    if (!isMobile()) {
+      sidebar.classList.remove('mobile-open');
+      document.getElementById('mobile-overlay').classList.remove('show');
+      applyDesktopState(false);
+    } else {
+      wrap.style.marginLeft = '0';
+      topBar.style.left     = '0';
+    }
+  });
+
+  // 遮罩关闭
+  document.getElementById('mobile-overlay').addEventListener('click', () => {
+    sidebar.classList.remove('mobile-open');
+    document.getElementById('mobile-overlay').classList.remove('show');
+  });
+
+  // 桌面端 toggleSidebar（移动端由 main.js 处理）
+  const _origToggle = window.toggleSidebar;
+  window.toggleSidebar = function() {
+    if (isMobile()) {
+      const isOpen = sidebar.classList.contains('mobile-open');
+      sidebar.classList.toggle('mobile-open', !isOpen);
+      document.getElementById('mobile-overlay').classList.toggle('show', !isOpen);
+    } else {
+      const expanded = sidebar.style.width !== MINI_W;
+      localStorage.setItem('sidebarExpanded', expanded ? '0' : '1');
+      applyDesktopState(true);
+    }
+  };
+
+  // 悬停浮层（桌面端mini模式）
   const popup = document.getElementById('sidebar-popup-label');
   let popupTimer = null;
   document.getElementById('main-menu').addEventListener('mouseover', function(e) {
@@ -629,6 +758,15 @@
   popup.addEventListener('mouseleave', () => popup.classList.remove('show'));
 })();
 
+/* 移动端顶部栏标题切换模式 */
+document.getElementById('mobile-logo-text').addEventListener('click', function() {
+  const MODES      = ['normal', 'webstack', 'easy', 'nav'];
+  const MODE_PATHS = { normal: '../normal/index.html', webstack: '../webstack/index.html', easy: '../easy/index.html', nav: '../nav/index.html' };
+  const next = MODES[(MODES.indexOf('webstack') + 1) % MODES.length];
+  localStorage.setItem('navMode', next);
+  window.location.href = MODE_PATHS[next];
+});
+
 /* 暗色模式 */
 function toggleDark() {
   const isDark = document.body.classList.toggle('dark-mode');
@@ -648,11 +786,11 @@ window.toggleDark = toggleDark;
 (function() {
   const layer = document.getElementById('banner-bg-layer');
   if (!layer) return;
-  layer.style.backgroundImage = `url(assets/images/banner.png)`;
+  layer.style.backgroundImage = 'url(assets/images/banner.png)';
   requestAnimationFrame(() => layer.classList.add('loaded'));
 })();
 
-/* 格言 — 只在加载时显示一条，不自动切换，不响应点击 */
+/* 格言 */
 (function() {
   let quotes = [], currentIdx = -1;
   async function loadQuotes() {
@@ -677,7 +815,6 @@ window.toggleDark = toggleDark;
       el.classList.add('fade-in');
     }, 350);
   }
-  /* 不绑定任何点击事件，不设定时器 */
   loadQuotes();
 })();
 
@@ -779,41 +916,6 @@ document.addEventListener('keydown', function(e) {
     if (document.getElementById('search-modal')?.classList.contains('open')) closeSearchModal();
   }
 });
-
-// ── webstack/index.html 修改说明 ──
-//
-// 1. 找到标题元素（王五导航 或 #sidebar-logo-text），加上 id="site-title"
-//    以及 style="cursor:pointer;" title="点击切换模式"
-//
-// 2. 在 <script> 末尾加入以下代码：
-//
-// ─────────────────────────────────────────────
-(function() {
-  const MODES      = ['normal', 'webstack', 'easy', 'nav'];
-  const MODE_PATHS = {
-    normal:   '../normal/index.html',
-    webstack: '../webstack/index.html',
-    easy:     '../easy/index.html',
-    nav:      '../nav/index.html',
-  };
-  function switchMode() {
-    const cur  = 'webstack';
-    const next = MODES[(MODES.indexOf(cur) + 1) % MODES.length];
-    localStorage.setItem('navMode', next);
-    window.location.href = MODE_PATHS[next];
-  }
-  // 页面加载时记录当前模式
-  localStorage.setItem('navMode', 'webstack');
-  // 绑定标题点击
-  const title = document.getElementById('sidebar-logo-text');
-  if (title) {
-    title.style.cursor = 'pointer';
-    title.title = '点击切换模式';
-    title.addEventListener('click', switchMode);
-  }
-})();
-// ─────────────────────────────────────────────
-  
 </script>
 </body>
 </html>
